@@ -11,6 +11,16 @@ Each controller takes its own backup at a set time. This script then runs from W
 
 At the end it logs a summary of what downloaded, which robots were offline, and what failed.
 
+## The robot side: `AutoBackup.mod`
+
+The robots trigger their own backups with a small RAPID module. This version is the one from our offline cell, where it runs on Saturdays.
+
+- Once it's Saturday, 7 AM or later, and the robot hasn't backed up yet that day, it starts watching for the line to be idle.
+- It waits until there's no job running **and** no job queued for 5 straight minutes. Our normal cycle is 60 seconds, so a 5 minute gap only happens when the line is really stopped, not during a short gap between jobs.
+- Then it pulses `doBackup`, which is set up on the controller to kick off a system backup, and saves the date so it only runs once that day.
+
+It needs a `clock1` clock and the `JobInProgress`, `JobPending` and `doBackup` signals set up on the controller.
+
 ## Setup
 
 - Install WinSCP. The script loads `WinSCPnet.dll` from `C:\Program Files (x86)\WinSCP\`.
